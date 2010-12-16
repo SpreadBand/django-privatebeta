@@ -1,0 +1,6 @@
+build/
+*.pyc
+.pydevproject
+.project
+*.csv
+*.swp
