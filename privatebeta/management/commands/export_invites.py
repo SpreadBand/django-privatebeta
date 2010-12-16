@@ -1,23 +1,24 @@
 import csv
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from privatebeta.models import InviteRequest
+from privatebeta.utils import proc_queryset
 
-class Command(BaseCommand):
-	args = '<file_name>'
-	help = 'Export invitations to CSV files'
+
+class Command(BaseCommand, models.Model):
+	args = _('<file_name>')
+	help = _('Export invitations to CSV files')
 
 	def handle(self, *args, **options):
 		try:
 			file_name = args[0]
 		except IndexError, e:
-			raise CommandError("You must provide a file name to export to.")
+			raise CommandError(_("You must provide a file name to export to."))
 
-		csvWriter = csv.writer(open(file_name, 'w'), delimiter=';')
-
-		invites = InviteRequest.objects.all()
-		for invite in invites:
-        		info = (invite.email, invite.created, invite.invited)
-        		csvWriter.writerow(info)
+		csvexport = open(file_name, 'w')
+		queryset = InviteRequest.objects.all()
+		proc_queryset(queryset, csvexport)
 
